@@ -74,9 +74,9 @@ const AdminPage: NextPage = () => {
         <div className="px-5">
           <h1 className="text-center mb-8">
             <span className="block text-2xl mb-2">Welcome to</span>
-            <span className="block text-4xl font-bold">Scaffold-ETH 2</span>
+            <span className="block text-4xl font-bold">TapTrust</span>
           </h1>
-          <p className="text-center text-lg">Get started by uploading your HaLo addresses</p>
+          <p className="text-center text-lg">To get started, upload a list of HaLo addresses</p>
           <FileReadComponent
             transformFunction={schema => Object.values(schema).map(entry => entry.address)}
             addresses={eoaAddresses}
