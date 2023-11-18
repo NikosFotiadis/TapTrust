@@ -31,7 +31,8 @@ contract Voting {
 
 	event CreatePoll(
 		address indexed creator,
-		bytes32 id
+		bytes32 id,
+		uint256 endTs
 	);
 
 	/// @param eas The address of the global EAS contract.
@@ -63,7 +64,7 @@ contract Voting {
 		poll.attester = attester;
 		poll.eventId = eventId;
 
-		emit CreatePoll(msg.sender, pollId);
+		emit CreatePoll(msg.sender, pollId, endTs);
 	}
 
 	function getPoll(bytes32 pollId) view public returns(Poll memory) {
