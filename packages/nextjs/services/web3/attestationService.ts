@@ -1,5 +1,8 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { getSigner } from "./ethersSigner";
-import { EAS, SchemaEncoder, SchemaRegistry } from "@ethereum-attestation-service/eas-sdk";
+import { Attestation, EAS, SchemaEncoder, SchemaRecord, SchemaRegistry } from "@ethereum-attestation-service/eas-sdk";
+import { Contract } from "ethers";
+import externalContracts from "~~/contracts/externalContracts";
 
 const EASContractAddress = "0xC2679fBD37d54388Ce493F1DB75320D236e1815e"; // Sepolia v0.26
 const schemaRegistryContractAddress = "0x0a7E2Ff54e76B8E6659aedc9103FB21c038050D0";
@@ -63,11 +66,45 @@ const _createMultiAttestation = async (addresses: string[], attestationType: str
   await tx.wait();
 };
 
+export const fetchAttestation = async (attestationId: string): Promise<Attestation> => {
+  const signer = await getSigner();
+  const eas = new EAS(EASContractAddress);
+  // @ts-ignore
+  eas.connect(signer);
+
+  return eas.getAttestation(attestationId);
+};
+
+export const fetchAttestationSchema = async (schemaId: string): Promise<SchemaRecord> => {
+  const signer = await getSigner();
+  const schemaRegistry = new SchemaRegistry(schemaRegistryContractAddress);
+
+  // @ts-ignore
+  schemaRegistry.connect(signer);
+
+  return await schemaRegistry.getSchema({ uid: schemaId });
+};
+
 export const createMultiAttestation = async (addresses: string[], attestation: string): Promise<void> => {
   console.log(`Creating attestation for addresses ${addresses} with attestation ${attestation}`);
 
   await _createMultiAttestation(addresses, attestation, { eventId: "1", eventName: "ev1" });
   return;
+};
+
+export const getAllAttestationsForUser = async (userAddress: string, schemaId: string) => {
+  const signer = await getSigner();
+
+  const address = externalContracts[1].EAS.address;
+  const abi = externalContracts[1].EAS.abi;
+  const fromBlock = externalContracts[1].EAS.deployedAt;
+  const EASInstance = new Contract(address, abi, signer);
+
+  const attested = await EASInstance.queryFilter("Attested", fromBlock);
+
+  return attested.filter(event => {
+    return event.args!.recipient === userAddress && event.args!.schema === schemaId;
+  });
 };
 
 const createAttestationSchema = async () => {
