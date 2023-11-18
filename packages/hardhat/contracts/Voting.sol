@@ -20,6 +20,7 @@ contract Voting {
 		PollOption[] options;
 		uint256 endTs;
 		bytes32 attestationSchemaId;
+		uint256 eventId;
 		address attester;
 	}
 
@@ -47,7 +48,7 @@ contract Voting {
 		return keccak256(abi.encodePacked(creator, block.number));
 	}
 
-	function createPoll(bytes32 attestationSchema, address attester, string calldata title, string[] memory options, uint256 endTs) public {
+	function createPoll(bytes32 attestationSchema, address attester, uint256 eventId, string calldata title, string[] memory options, uint256 endTs) public {
 		bytes32 pollId = createPollId(msg.sender);
 		Poll storage poll = polls[pollId];
 		PollOption[] storage pollOptions = poll.options;
@@ -60,6 +61,7 @@ contract Voting {
 		poll.endTs = endTs;
 		poll.attestationSchemaId = attestationSchema;
 		poll.attester = attester;
+		poll.eventId = eventId;
 
 		emit CreatePoll(msg.sender, pollId);
 	}
@@ -74,9 +76,11 @@ contract Voting {
 		bool isValid = _eas.isAttestationValid(attestationId);
 		require(isValid, 'Attestation is not valid');
 		Attestation memory attestation = _eas.getAttestation(attestationId);
+		(uint256 eventId, string memory _name, string memory _role) = abi.decode(attestation.data, (uint256, string, string));
 		require(attestation.schema == polls[pollId].attestationSchemaId, 'Wrong schema');
 		require(attestation.attester == polls[pollId].attester, 'Wrong attester');
-	
+		require(eventId == polls[pollId].eventId, 'Wrong event');
+
 		return true;
 	}
 
@@ -90,7 +94,7 @@ contract Voting {
 						expirationTime: NO_EXPIRATION_TIME, // No expiration time
 						revocable: false,
 						refUID: EMPTY_UID, // No references UI
-						data: abi.encode(pollId), // Encode a single uint256 as a parameter to the schema
+						data: abi.encode(pollId),
 						value: 0 // No value/ETH
 					})
 			})
