@@ -44,6 +44,7 @@
     "@alchemy/aa-core": "^1.2.0",
     "@arx-research/libhalo": "^1.2.19",
     "@ethereum-attestation-service/eas-sdk": "^1.3.3",
+    "@headlessui/react": "^1.7.17",
     "elliptic": "^6.5.4",
     "viem": "^1.19.3",
     "zod": "^3.22.4"

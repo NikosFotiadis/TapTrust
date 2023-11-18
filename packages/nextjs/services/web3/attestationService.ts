@@ -9,6 +9,20 @@ const schemaRegistryContractAddress = "0x420000000000000000000000000000000000002
 const resolverAddress = "0x0000000000000000000000000000000000000000";
 export const schemaUID = "0x95e10aa7a515d68dafbfd739b4c9ed7afb40e1fbe8f7a1468501de02fc334c28";
 
+export const ROLES = {
+  organizer: "roleOr",
+  attendee: "roleAt",
+};
+
+type AttestationData = {
+  eventId: string;
+  eventName: string;
+  role: string;
+  attester: string;
+  recipient: string;
+  id: string;
+};
+
 const createAttendeeSchemaData = ({ eventId, eventName }: { eventId: string; eventName: string }): any => {
   const schemaEncoder = new SchemaEncoder(attestationTypes.attendee.schema);
   return schemaEncoder.encodeData([
@@ -86,12 +100,11 @@ export const fetchAttestationSchema = async (schemaId: string): Promise<SchemaRe
 export const createMultiAttestation = async (addresses: string[], attestation: string): Promise<void> => {
   console.log(`Creating attestation for addresses ${addresses} with attestation ${attestation}`);
 
-  // await _createMultiAttestation(addresses, attestation, { eventId: "1", eventName: "ev1" });
-  await createAttestationSchema();
+  await _createMultiAttestation(addresses, attestation, { eventId: "1", eventName: "ev1" });
   return;
 };
 
-export const getAttestationsForAddress = async (userAddress: string) => {
+export const getAttestationsForAddress = async (userAddress: string): Promise<AttestationData[]> => {
   const provider = await getProvider();
 
   const address = externalContracts[1].EAS.address;
@@ -101,9 +114,35 @@ export const getAttestationsForAddress = async (userAddress: string) => {
 
   const attested = await EASInstance.queryFilter("Attested", fromBlock);
 
-  return attested.filter(event => {
+  const filtered = attested.filter(event => {
     return event.args!.recipient === userAddress && event.args!.schema === schemaUID;
   });
+
+  return await Promise.all(
+    filtered.map(async attestation => {
+      const attestationId = attestation.args.uid;
+      const attestationDetails = await EASInstance.getAttestation(attestationId);
+
+      console.log("file: attestationService.ts:126 -> attestationDetails:", attestationDetails);
+      const schemaEncoder = new SchemaEncoder(attestationTypes.attendee.schema);
+      const decoded = schemaEncoder.decodeData(attestationDetails.data);
+
+      const eventId = decoded.find(({ name }) => name === "eventId")!.value.value as string;
+      const eventName = decoded.find(({ name }) => name === "name1")!.value.value as string;
+      const role = decoded.find(({ name }) => name === "role1")!.value.value as string;
+
+      const attestationItem: AttestationData = {
+        eventId,
+        eventName,
+        role,
+        attester: attestation.args!.attester,
+        recipient: attestation.args!.recipient,
+        id: attestationId,
+      };
+
+      return attestationItem;
+    }),
+  );
 };
 
 // Return all the attestations where you are the organizer
