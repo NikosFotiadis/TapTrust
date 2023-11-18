@@ -86,8 +86,8 @@ export const fetchAttestationSchema = async (schemaId: string): Promise<SchemaRe
 export const createMultiAttestation = async (addresses: string[], attestation: string): Promise<void> => {
   console.log(`Creating attestation for addresses ${addresses} with attestation ${attestation}`);
 
-  // await _createMultiAttestation(addresses, attestation, { eventId: "1", eventName: "ev1" });
-  await createAttestationSchema();
+  await _createMultiAttestation(addresses, attestation, { eventId: "2", eventName: "ev2" });
+  // await createAttestationSchema();
   return;
 };
 
@@ -144,4 +144,22 @@ const createAttestationSchema = async () => {
 
   // Optional: Wait for transaction to be validated
   await transaction.wait();
+};
+
+export const createAttestation = async (eventName: string) => {
+  const signer = await getSigner();
+  const eas = new EAS(EASContractAddress);
+  // @ts-ignore
+  eas.connect(signer);
+
+  const schemaData = createOrganizerSchemaData({ eventId: Math.floor(Math.random() * 10000).toString(), eventName });
+
+  await eas.attest({
+    schema: schemaUID,
+    data: {
+      recipient: await signer.getAddress(),
+      revocable: false,
+      data: schemaData,
+    },
+  });
 };

@@ -4,6 +4,7 @@ import type { NextPage } from "next";
 import { useMutation } from "wagmi";
 import { z } from "zod";
 import { MetaHeader } from "~~/components/MetaHeader";
+import { createAttestation } from "~~/services/web3/attestationService";
 import { registerAddresses } from "~~/services/web3/registerAddresses";
 
 const publicKeySchema = z.object({
@@ -62,10 +63,22 @@ const FileReadComponent: React.FC<FileReadComponentProps> = props => {
 
 const AdminPage: NextPage = () => {
   const [eoaAddresses, setEoaAddresses] = useState<string[]>([]);
+  const [eventName, setEventName] = useState<string>("");
+  const [loading, setLoading] = useState(false);
 
   const { mutate, status } = useMutation({
     mutationFn: registerAddresses,
   });
+
+  const handleChangeEventName = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setEventName(event.target.value);
+  };
+
+  const handleSubmit = () => {
+    setLoading(true);
+    createAttestation(eventName);
+    setLoading(false);
+  };
 
   return (
     <>
@@ -103,6 +116,20 @@ const AdminPage: NextPage = () => {
               </button>
             </div>
           )}
+          <h1 className="text-center mb-8">
+            <span className="block text-4xl font-bold">Create a new event</span>
+            <input
+              type="text"
+              className="input input-bordered w-full max-w-xs"
+              value={eventName}
+              onChange={handleChangeEventName}
+            />
+            <div className="w-full flex mt-4 mb-4">
+              <button className="btn w-full max-w-xs bg-blue-400" onClick={handleSubmit}>
+                {loading ? "Loading..." : "Create Event"}
+              </button>
+            </div>
+          </h1>
         </div>
       </div>
     </>
