@@ -1,16 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import React from "react";
-import Link from "next/link";
 import type { NextPage } from "next";
-import { useAccount, useMutation } from "wagmi";
+import { useMutation } from "wagmi";
 import { z } from "zod";
 import { Header } from "~~/components/Header";
 import { MetaHeader } from "~~/components/MetaHeader";
-import {
-  AttestationData,
-  createAttestation,
-  getOrganizerAttestationsForAddress,
-} from "~~/services/web3/attestationService";
 import { registerAddresses } from "~~/services/web3/registerAddresses";
 
 const publicKeySchema = z.object({
@@ -69,37 +63,10 @@ const FileReadComponent: React.FC<FileReadComponentProps> = props => {
 
 const AdminPage: NextPage = () => {
   const [eoaAddresses, setEoaAddresses] = useState<string[]>([]);
-  const [eventName, setEventName] = useState<string>("");
-  const [loading, setLoading] = useState(false);
-  const [organizerEvents, setOrganizerEvents] = useState<AttestationData[]>([]);
-
-  const account = useAccount();
 
   const { mutate, status } = useMutation({
     mutationFn: registerAddresses,
   });
-
-  const handleChangeEventName = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEventName(event.target.value);
-  };
-
-  const handleSubmit = () => {
-    setLoading(true);
-    createAttestation(eventName);
-    setLoading(false);
-  };
-
-  const updateOrganizerEvents = async (userAddress: string) => {
-    const events = await getOrganizerAttestationsForAddress(userAddress);
-
-    setOrganizerEvents(events);
-  };
-
-  useEffect(() => {
-    if (account.address) {
-      updateOrganizerEvents(account.address);
-    }
-  }, [account.address]);
 
   return (
     <>
@@ -138,45 +105,6 @@ const AdminPage: NextPage = () => {
               </button>
             </div>
           )}
-          <h1 className="text-center mb-8">
-            <span className="block text-4xl font-bold">Create a new event</span>
-            <input
-              type="text"
-              className="input input-bordered w-full max-w-xs"
-              value={eventName}
-              onChange={handleChangeEventName}
-            />
-            <div className="w-full flex mt-4 mb-4">
-              <button className="btn w-full max-w-xs bg-blue-400" onClick={handleSubmit}>
-                {loading ? "Loading..." : "Create Event"}
-              </button>
-            </div>
-          </h1>
-        </div>
-        <div>
-          <ul
-            role="list"
-            className="divide-y divide-gray-100 overflow-hidden bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl"
-          >
-            {organizerEvents.map(attestation => (
-              <li
-                key={attestation.id}
-                className="relative flex justify-between gap-x-6 px-4 py-5 hover:bg-gray-50 sm:px-6"
-              >
-                <div className="flex min-w-0 gap-x-4 gap-y-4">
-                  <div className="min-w-8 flex-auto">
-                    <p className="text-xs font-medium leading-6 text-gray-600">Event Name</p>
-                    <p className="text-xl font-semibold leading-6 text-gray-900">
-                      <Link href={`/events/${attestation.eventId}`}>{attestation.eventName}</Link>
-                    </p>
-
-                    <p className="text-xs font-medium leading-6 text-gray-600">Event Role</p>
-                    <p className="text-xl font-semibold leading-6 text-gray-900">{attestation.role}</p>
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
         </div>
       </div>
     </>

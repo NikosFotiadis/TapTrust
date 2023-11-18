@@ -25,7 +25,7 @@ const Polls = () => {
   const [polls, setPolls] = useState<any[]>([]);
 
   const getEvents = async () => {
-    const events = (await readEvents(deployedContracts[baseGoerli.id as 31337].Voting.address)) || [];
+    const events = (await readEvents(deployedContracts[baseGoerli.id as 84531].Voting.address)) || [];
 
     setPolls(events.map(({ args }) => args));
   };
