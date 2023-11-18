@@ -3,7 +3,7 @@ import { LightSmartContractAccount, getDefaultLightAccountFactoryAddress } from 
 import { AlchemyProvider } from "@alchemy/aa-alchemy";
 import { SignTypedDataParams } from "@alchemy/aa-core";
 import type { Address } from "abitype";
-import type { Hex } from "viem";
+import { type Hex } from "viem";
 import { baseGoerli } from "viem/chains";
 
 const chain = baseGoerli;
@@ -73,18 +73,42 @@ export const generateCounterfactualAddresses = async (eoaAddresses: string[]): P
   return Promise.all(eoaAddresses.map(generateCounterfactualAddress));
 };
 
-export const deploySmartAccount = async (forEoa: string) => {
-  // TODO @MichalisG to add implementation
-
-  console.log("deploySmartAccount", forEoa);
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  return "0x1234567890123456789012345678901234567890";
-};
-
 export const isAccountDeployed = async (eoaAddress: string) => {
   // TODO @MichalisG to add implementation
   await new Promise(resolve => setTimeout(resolve, 1000));
   const aaAddress = await generateCounterfactualAddress(eoaAddress);
 
   return aaAddress;
+};
+
+export const sendUserOperation = async (options: { signerAddress: string; to: string; value: bigint; data: string }) => {
+  const provider = await getSmartAccount(options.signerAddress);
+
+  // Find your Gas Manager policy id at:
+  //dashboard.alchemy.com/gas-manager/policy/create
+  const GAS_MANAGER_POLICY_ID = "29327ccf-1135-458d-bb40-2e32fa0e4c2d";
+
+  // Link the provider with the Gas Manager. This ensures user operations
+  // sent with this provider get sponsorship from the Gas Manager.
+  provider.withAlchemyGasManager({
+    policyId: GAS_MANAGER_POLICY_ID,
+  });
+
+  // Here's how to send a sponsored user operation from your smart account:
+  const result= await provider.sendUserOperation({
+    target: options.to,
+    data: options.data as `0x${string}`,
+  });
+
+  console.log(result.hash);
+
+  return result;
+};
+
+export const waitForUserOperationTransaction = async (eoaAddress: string, uoHash: string) => {
+  const smartAccount = await getSmartAccount(eoaAddress);
+
+  const txHash = await smartAccount.waitForUserOperationTransaction(uoHash as `0x${string}`);
+
+  return txHash;
 };

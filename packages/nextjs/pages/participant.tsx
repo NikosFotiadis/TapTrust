@@ -1,10 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import React from "react";
 import type { NextPage } from "next";
 import AccountAbstractionChecker from "~~/components/AccountAbstractionChecker";
 import { MetaHeader } from "~~/components/MetaHeader";
 import Scan from "~~/components/Scan";
-import { getSmartAccount } from "~~/services/web3/accountAbstraction";
 
 // in this page we allow a participant to login with his Halo.
 // If the AA has not been created, the user will be prompetd to create one.
@@ -12,14 +11,6 @@ import { getSmartAccount } from "~~/services/web3/accountAbstraction";
 
 const ParticipantPage: NextPage = () => {
   const [haloAddress, setHaloAddress] = useState<string>();
-
-  useEffect(() => {
-    if (!haloAddress) return;
-
-    getSmartAccount(haloAddress).then(res => {
-      alert(res);
-    });
-  }, [haloAddress]);
 
   return (
     <>
