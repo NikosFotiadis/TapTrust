@@ -20,7 +20,7 @@ const AccountAbstractionAttestations: React.FC<ScanComponentProps> = props => {
   return (
     <div>
       {data.map(attestation => (
-        <div key={attestation.args!.uid}>{attestation.args!.uid ? attestation.args!.uid.slice(0, 10) : ""}</div>
+        <div key={attestation.args?.uid}>{attestation.args?.uid ? attestation.args?.uid.slice(0, 10) : ""}</div>
       ))}
     </div>
   );
