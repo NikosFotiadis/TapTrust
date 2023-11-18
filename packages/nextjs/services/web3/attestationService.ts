@@ -6,7 +6,7 @@ import externalContracts from "~~/contracts/externalContracts";
 
 const EASContractAddress = "0x4200000000000000000000000000000000000021";
 const schemaRegistryContractAddress = "0x4200000000000000000000000000000000000020";
-const resolverAddress = "0x0000000000000000000000000000000000000000";
+// const resolverAddress = "0x0000000000000000000000000000000000000000";
 export const schemaUID = "0x95e10aa7a515d68dafbfd739b4c9ed7afb40e1fbe8f7a1468501de02fc334c28";
 
 export const ROLES = {
@@ -120,7 +120,7 @@ export const getAttestationsForAddress = async (userAddress: string): Promise<At
 
   return await Promise.all(
     filtered.map(async attestation => {
-      const attestationId = attestation.args.uid;
+      const attestationId = attestation.args?.uid;
       const attestationDetails = await EASInstance.getAttestation(attestationId);
 
       console.log("file: attestationService.ts:126 -> attestationDetails:", attestationDetails);

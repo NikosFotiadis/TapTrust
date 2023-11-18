@@ -1,5 +1,4 @@
 import React from "react";
-// import Image from "next/image";
 import { useMutation } from "wagmi";
 import nfcImage from "~~/public/nfc.svg";
 import { readHaloAddress } from "~~/services/web3/halo";
@@ -18,12 +17,12 @@ const Scan: React.FC<ScanComponentProps> = props => {
     },
   });
   return (
-    <div className="container border border-gray-500 p-4 flex items-center justify-center flex-col rounded-lg">
-    <img src={nfcImage.src} />
+    <div className="container border border-gray-500 p-4 flex items-center justify-center flex-col rounded-lg max-w-sm">
+      <img src={nfcImage.src} />
 
-    <button onClick={() => mutate()} className="btn w-full btn-primary">
-      Scan
-    </button>
+      <button onClick={() => mutate()} className="btn w-full btn-primary">
+        Scan
+      </button>
     </div>
   );
 };

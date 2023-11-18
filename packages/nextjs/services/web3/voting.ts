@@ -1,10 +1,10 @@
 import { encodeFunctionData } from "viem";
-import Voting_abi from "~~/services/web3/abis/Voting_abi.json";
+import deployedContracts from "~~/contracts/deployedContracts";
 
 export const getVotingUoCallData = (attestationId: string, pollId: string, option: number) => {
   return encodeFunctionData({
-    abi: Voting_abi,
+    abi: deployedContracts[31337].Voting.abi,
     functionName: "vote",
-    args: [attestationId, pollId, option],
+    args: [attestationId, pollId, BigInt(option)],
   });
 };
