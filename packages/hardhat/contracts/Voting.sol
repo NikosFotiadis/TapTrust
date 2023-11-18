@@ -31,6 +31,7 @@ contract Voting {
 
 	event CreatePoll(
 		address indexed creator,
+		string title,
 		bytes32 id,
 		uint256 endTs
 	);
@@ -64,7 +65,7 @@ contract Voting {
 		poll.attester = attester;
 		poll.eventId = eventId;
 
-		emit CreatePoll(msg.sender, pollId, endTs);
+		emit CreatePoll(msg.sender, title, pollId, endTs);
 	}
 
 	function getPoll(bytes32 pollId) view public returns(Poll memory) {
