@@ -1,13 +1,12 @@
 import { type WalletClient, getWalletClient } from "@wagmi/core";
 import { providers } from "ethers";
-import { sepolia } from "wagmi/chains";
+import { baseGoerli } from "wagmi/chains";
 
 export function walletClientToSigner(walletClient: WalletClient) {
-  const { account, chain = sepolia, transport } = walletClient;
+  const { account, chain = baseGoerli, transport } = walletClient;
   const network = {
     chainId: chain.id,
     name: chain.name,
-    ensAddress: chain.contracts?.ensRegistry?.address,
   };
   const provider = new providers.Web3Provider(transport, network);
   const signer = provider.getSigner(account.address);

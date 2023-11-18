@@ -4,9 +4,9 @@ import { Attestation, EAS, SchemaEncoder, SchemaRecord, SchemaRegistry } from "@
 import { Contract } from "ethers";
 import externalContracts from "~~/contracts/externalContracts";
 
-const EASContractAddress = "0xC2679fBD37d54388Ce493F1DB75320D236e1815e"; // Sepolia v0.26
-const schemaRegistryContractAddress = "0x0a7E2Ff54e76B8E6659aedc9103FB21c038050D0";
-const resolverAddress = "0x0000000000000000000000000000000000000000"; // Sepolia 0.26
+const EASContractAddress = "0x4200000000000000000000000000000000000021";
+const schemaRegistryContractAddress = "0x4200000000000000000000000000000000000020";
+const resolverAddress = "0x0000000000000000000000000000000000000000";
 const schemaUID = "0x95e10aa7a515d68dafbfd739b4c9ed7afb40e1fbe8f7a1468501de02fc334c28";
 
 const createAttendeeSchemaData = ({ eventId, eventName }: { eventId: string; eventName: string }): any => {
