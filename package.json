@@ -40,8 +40,8 @@
   },
   "dependencies": {
     "@arx-research/libhalo": "^1.2.19",
+    "@ethereum-attestation-service/eas-sdk": "^1.3.3",
     "elliptic": "^6.5.4",
-    "ethers": "^6.8.1",
     "zod": "^3.22.4"
   }
 }

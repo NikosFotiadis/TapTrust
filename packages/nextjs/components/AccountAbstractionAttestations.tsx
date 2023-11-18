@@ -13,14 +13,14 @@ const AccountAbstractionAttestations: React.FC<ScanComponentProps> = props => {
     queryFn: () => getAttestationsForAddress(aaAddress),
   });
 
-  if(!data) {
+  if (!data) {
     return <div>...loading attestations</div>;
   }
 
   return (
     <div>
       {data.map(attestation => (
-        <div key={attestation}>{attestation}</div>
+        <div key={attestation.args!.uid}>{attestation.args!.uid ? attestation.args!.uid.slice(0, 10) : ""}</div>
       ))}
     </div>
   );
