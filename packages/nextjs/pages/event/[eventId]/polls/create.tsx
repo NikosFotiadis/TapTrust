@@ -22,11 +22,13 @@ const CreatePoll = () => {
 
   const endTs = nowInSeconds() + duration * 60;
 
+  if (!address) return <div>Not logged in</div>;
+
   const handleSubmit = () => {
     write({
       args: [
         schemaUID,
-        address!, //attester
+        address, //attester
         BigInt(Number(params.eventId)),
         title,
         options,
