@@ -18,6 +18,6 @@
       "~~/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "web-nfc.d.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "web-nfc.d.ts", "overrides.ts"],
   "exclude": ["node_modules"]
 }

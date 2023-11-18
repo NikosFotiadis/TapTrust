@@ -1,19 +1,24 @@
 import React from "react";
 import AccountAbstractionAttestations from "./AccountAbstractionAttestations";
 import { useMutation } from "wagmi";
-import { signEIP712 } from "~~/services/web3/halo";
+import { getSmartAccount } from "~~/services/web3/accountAbstraction";
 
 interface ScanComponentProps {
   aaAddress: string;
+  eoaAddress: string;
 }
 
 const AccountAbstractionController: React.FC<ScanComponentProps> = props => {
   const { aaAddress } = props;
 
   const { status, mutate, data } = useMutation({
-    mutationFn: () => signEIP712("abc", "aaa"),
+    mutationFn: async () => {
+      const smartAccount = await getSmartAccount(aaAddress);
+
+      return smartAccount.signMessage("Hello world");
+    },
     onSuccess: async data => {
-      alert(`Registered: ${data}`);
+      alert(`Signed message: ${data}`);
     },
   });
 
