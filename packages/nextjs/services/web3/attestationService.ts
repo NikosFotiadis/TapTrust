@@ -14,7 +14,7 @@ export const ROLES = {
   attendee: "roleAt",
 };
 
-type AttestationData = {
+export type AttestationData = {
   eventId: string;
   eventName: string;
   role: string;
@@ -157,33 +157,58 @@ export const getOrganizerAttestationsForAddress = async (userAddress: string) =>
   const attested = await EASInstance.queryFilter("Attested", fromBlock);
 
   // Events for which you self attested are the ones where you are the organizer
-  const res = attested.filter(event => {
+  const filtered = attested.filter(event => {
     return (
       event.args!.recipient === userAddress && event.args!.schema === schemaUID && event.args!.attester === userAddress
     );
   });
 
-  return res;
+  return await Promise.all(
+    filtered.map(async attestation => {
+      const attestationId = attestation.args!.uid;
+      const attestationDetails = await EASInstance.getAttestation(attestationId);
+
+      const schemaEncoder = new SchemaEncoder(attestationTypes.attendee.schema);
+      const decoded = schemaEncoder.decodeData(attestationDetails.data);
+
+      const eventId = decoded.find(({ name }) => name === "eventId")!.value.value as string;
+      const eventName = decoded.find(({ name }) => name === "name1")!.value.value as string;
+      const role = decoded.find(({ name }) => name === "role1")!.value.value as string;
+
+      const attestationItem: AttestationData = {
+        eventId,
+        eventName,
+        role,
+        attester: attestation.args!.attester,
+        recipient: attestation.args!.recipient,
+        id: attestationId,
+      };
+
+      console.log("file: attestationService.ts:188 -> attestationItem:", attestationItem);
+
+      return attestationItem;
+    }),
+  );
 };
 
-const createAttestationSchema = async () => {
-  const signer = await getSigner();
-  const schemaRegistry = new SchemaRegistry(schemaRegistryContractAddress);
+// const createAttestationSchema = async () => {
+//   const signer = await getSigner();
+//   const schemaRegistry = new SchemaRegistry(schemaRegistryContractAddress);
 
-  // @ts-ignore
-  schemaRegistry.connect(signer);
+//   // @ts-ignore
+//   schemaRegistry.connect(signer);
 
-  const revocable = false;
+//   const revocable = false;
 
-  const transaction = await schemaRegistry.register({
-    schema: "bytes32 pollId",
-    resolverAddress,
-    revocable,
-  });
+//   const transaction = await schemaRegistry.register({
+//     schema: "bytes32 pollId",
+//     resolverAddress,
+//     revocable,
+//   });
 
-  // Optional: Wait for transaction to be validated
-  await transaction.wait();
-};
+//   // Optional: Wait for transaction to be validated
+//   await transaction.wait();
+// };
 
 export const createAttestation = async (eventName: string) => {
   const signer = await getSigner();
