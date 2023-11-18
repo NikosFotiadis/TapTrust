@@ -27,7 +27,28 @@ export const readHaloAddress = async () => {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const signEIP712 = async (message: any, signer: string) => {
+export const sign = async (message: any) => {
+  const cmd = {
+    name: "sign",
+    message: message,
+    format: 'text',
+    keyNo: 1,
+  };
+
+  try {
+    // --- request NFC command execution ---
+    const res = await execHaloCmdWeb(cmd);
+
+    // alert(`Signed: ${JSON.stringify(res, null, 2)}`);
+    alert(`Signed hex: ${res.signature.ether}`);
+    return res.signature.ether;
+  } catch (e) {
+    // the command has failed, display error to the user
+    alert("Error: " + String(e));
+  }
+};
+
+export const signEIP712 = async (message: any) => {
   const cmd = {
     name: "sign",
     keyNo: 1,
@@ -73,7 +94,7 @@ export const signEIP712 = async (message: any, signer: string) => {
           name: "Bob",
           wallet: "0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB",
         },
-        contents: "Hello, Bob!",
+        contents: message,
       },
     },
   };
@@ -82,7 +103,7 @@ export const signEIP712 = async (message: any, signer: string) => {
     // --- request NFC command execution ---
     const res = await execHaloCmdWeb(cmd);
 
-    alert(`Signed: ${res}`);
+    alert(`Signed EIP 712: ${JSON.stringify(res, null, 2)}`);
     return res;
   } catch (e) {
     // the command has failed, display error to the user

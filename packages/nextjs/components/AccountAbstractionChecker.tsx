@@ -1,8 +1,7 @@
 import React from "react";
 import AccountAbstractionController from "./AccountAbstractionController";
-import AccountAbstractionDeployer from "./AccountAbstractionDeployer";
 import { useQuery } from "wagmi";
-import { isAccountDeployed } from "~~/services/web3/accountAbstraction";
+import { generateCounterfactualAddress } from "~~/services/web3/accountAbstraction";
 
 interface ScanComponentProps {
   eoaAddress: string;
@@ -11,24 +10,30 @@ interface ScanComponentProps {
 const AccountAbstractionChecker: React.FC<ScanComponentProps> = props => {
   const { eoaAddress } = props;
 
-  const { status, data, refetch } = useQuery(["isAccountDeployed", eoaAddress], {
-    queryFn: () => isAccountDeployed(eoaAddress),
+  const { status, data, refetch } = useQuery([eoaAddress], {
+    queryFn: () => generateCounterfactualAddress(eoaAddress),
   });
+
+  if (status === "error") {
+    return (
+      <div>
+        Error
+        <button onClick={() => refetch()}>Retry</button>
+      </div>
+    );
+  }
+
+  if (status === "loading") {
+    return <div>...loading</div>;
+  }
+
+  if (!data) {
+    return <div>Something went wrong</div>;
+  }
 
   return (
     <div>
-      {
-        {
-          idle: "Checking AA",
-          loading: "Checking AA...",
-          error: "Error",
-          success: data ? (
-            <AccountAbstractionController aaAddress={data} />
-          ) : (
-            <AccountAbstractionDeployer eoaAddress={eoaAddress} onSuccess={refetch} />
-          ),
-        }[status]
-      }
+      <AccountAbstractionController aaAddress={data} eoaAddress={eoaAddress} />
     </div>
   );
 };
