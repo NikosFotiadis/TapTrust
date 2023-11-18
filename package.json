@@ -31,6 +31,7 @@
   },
   "packageManager": "yarn@3.2.3",
   "devDependencies": {
+    "@types/elliptic": "^6",
     "husky": "^8.0.1",
     "lint-staged": "^13.0.3"
   },
@@ -38,6 +39,9 @@
     "usehooks-ts@^2.7.2": "patch:usehooks-ts@npm:^2.7.2#./.yarn/patches/usehooks-ts-npm-2.7.2-fceffe0e43.patch"
   },
   "dependencies": {
+    "@arx-research/libhalo": "^1.2.19",
+    "elliptic": "^6.5.4",
+    "ethers": "^6.8.1",
     "zod": "^3.22.4"
   }
 }
