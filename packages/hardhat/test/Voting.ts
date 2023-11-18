@@ -10,6 +10,7 @@ describe("Voting", function () {
   const AttestationSchema = "0x95e10aa7a515d68dafbfd739b4c9ed7afb40e1fbe8f7a1468501de02fc334c28";
   const Issuer = "0xD5c08CfBe6C6663e0A3203DA8d5CFECbF10116dB";
   const VotedAttestationSchemaId = "0x2b834eed7346ffb38f2ab730d952e63ae64bd91343fdd0457fee1b8d70e357c4";
+  const EventId = "1";
 
   before(async () => {
     const VotingFactory = await ethers.getContractFactory("Voting");
@@ -21,7 +22,14 @@ describe("Voting", function () {
     it("Should create poll", async function () {
       const [owner] = await ethers.getSigners();
       const endTs = Math.round(Date.now() / 1000) + 100000;
-      const tx = await votingContract.createPoll(AttestationSchema, Issuer, "Winners", ["John", "Alice", "Bob"], endTs);
+      const tx = await votingContract.createPoll(
+        AttestationSchema,
+        Issuer,
+        EventId,
+        "Winners",
+        ["John", "Alice", "Bob"],
+        endTs,
+      );
 
       const receipt = await tx.wait();
 
@@ -46,13 +54,20 @@ describe("Voting", function () {
     it("Should emit event on createPoll", async function () {
       const endTs = Math.round(Date.now() / 1000) + 100000;
       await expect(
-        votingContract.createPoll(AttestationSchema, Issuer, "Winners", ["John", "Alice", "Bob"], endTs),
+        votingContract.createPoll(AttestationSchema, Issuer, EventId, "Winners", ["John", "Alice", "Bob"], endTs),
       ).to.emit(votingContract, "CreatePoll");
     });
 
     it("Should vote", async function () {
       const endTs = Math.round(Date.now() / 1000) + 100000;
-      const tx = await votingContract.createPoll(AttestationSchema, Issuer, "Winners", ["John", "Alice", "Bob"], endTs);
+      const tx = await votingContract.createPoll(
+        AttestationSchema,
+        Issuer,
+        EventId,
+        "Winners",
+        ["John", "Alice", "Bob"],
+        endTs,
+      );
       const receipt = await tx.wait();
       const createPollEvent = receipt.events?.find(({ event }) => event === "CreatePoll");
       const args = createPollEvent?.args;
@@ -67,7 +82,7 @@ describe("Voting", function () {
     it("Should not vote", async function () {
       const endTs = Math.round(Date.now() / 1000) - 1000;
       expect(
-        votingContract.createPoll(AttestationSchema, Issuer, "Winners", ["John", "Alice", "Bob"], endTs),
+        votingContract.createPoll(AttestationSchema, Issuer, EventId, "Winners", ["John", "Alice", "Bob"], endTs),
       ).to.be.revertedWith("Vote has ended");
     });
   });
