@@ -15,8 +15,8 @@ const CreatePoll = () => {
   const [duration, setDuration] = useState(0);
   const { address } = useAccount();
   const { isLoading, write } = useContractWrite({
-    address: deployedContracts[baseGoerli.id as 31337].Voting.address,
-    abi: deployedContracts[baseGoerli.id as 31337].Voting.abi,
+    address: deployedContracts[baseGoerli.id as 84531].Voting.address,
+    abi: deployedContracts[baseGoerli.id as 84531].Voting.abi,
     functionName: "createPoll",
   });
 
