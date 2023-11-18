@@ -54,7 +54,7 @@ const AccountAbstractionController: React.FC<ScanComponentProps> = props => {
       </div>
 
       <h2 className="text-xl font-semibold">Attestations</h2>
-      <AccountAbstractionAttestations aaAddress={aaAddress} />
+      <AccountAbstractionAttestations aaAddress={aaAddress} eoaAddress={eoaAddress} />
 
       <h2 className="text-xl font-semibold">Sign message</h2>
 

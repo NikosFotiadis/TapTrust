@@ -3,6 +3,7 @@ import { useParams } from "next/navigation";
 import { useContractRead } from "wagmi";
 import { baseGoerli } from "wagmi/chains";
 import deployedContracts from "~~/contracts/deployedContracts";
+import { sendUserOperation, waitForUserOperationTransaction } from "~~/services/web3/accountAbstraction";
 import { AttestationData, getAttestationsForAddress } from "~~/services/web3/attestationService";
 import { getVotingUoCallData } from "~~/services/web3/voting";
 
@@ -18,9 +19,20 @@ const Vote = () => {
     args: [params?.pollId as string],
   });
 
-  const handleVote = () => {
+  const handleVote = async () => {
     if (attestation?.id) {
-      getVotingUoCallData(attestation.id, params.pollId as string, Number(selectedOption));
+      const uoCallData = getVotingUoCallData(attestation.id, params.pollId as string, Number(selectedOption));
+
+      const uo = await sendUserOperation({
+        signerAddress: params.userAddress as string,
+        to: deployedContracts[baseGoerli.id].Voting.address,
+        data: uoCallData,
+        value: BigInt(0),
+      });
+
+      const txHash = await waitForUserOperationTransaction(params.userAddress as string, uo.hash);
+
+      alert(txHash);
     }
   };
 
