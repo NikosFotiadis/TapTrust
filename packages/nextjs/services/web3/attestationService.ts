@@ -7,6 +7,7 @@ import externalContracts from "~~/contracts/externalContracts";
 const EASContractAddress = "0xC2679fBD37d54388Ce493F1DB75320D236e1815e"; // Sepolia v0.26
 const schemaRegistryContractAddress = "0x0a7E2Ff54e76B8E6659aedc9103FB21c038050D0";
 const resolverAddress = "0x0000000000000000000000000000000000000000"; // Sepolia 0.26
+const schemaUID = "0x95e10aa7a515d68dafbfd739b4c9ed7afb40e1fbe8f7a1468501de02fc334c28";
 
 const createAttendeeSchemaData = ({ eventId, eventName }: { eventId: string; eventName: string }): any => {
   const schemaEncoder = new SchemaEncoder(attestationTypes.attendee.schema);
@@ -29,12 +30,10 @@ const createOrganizerSchemaData = ({ eventId, eventName }: { eventId: string; ev
 const attestationTypes = {
   organizer: {
     schema: "uint256 eventId1, string name1, string role1",
-    schemaUID: "0x95e10aa7a515d68dafbfd739b4c9ed7afb40e1fbe8f7a1468501de02fc334c28",
     schemaFactory: createOrganizerSchemaData,
   },
   attendee: {
     schema: "uint256 eventId, string name1, string role1",
-    schemaUID: "0x95e10aa7a515d68dafbfd739b4c9ed7afb40e1fbe8f7a1468501de02fc334c28",
     schemaFactory: createAttendeeSchemaData,
   },
 };
@@ -57,8 +56,7 @@ const _createMultiAttestation = async (addresses: string[], attestationType: str
 
   const tx = await eas.multiAttest([
     {
-      // @ts-ignore
-      schema: attestationTypes[attestationType].schemaUID,
+      schema: schemaUID,
       data: data,
     },
   ]);
@@ -92,7 +90,7 @@ export const createMultiAttestation = async (addresses: string[], attestation: s
   return;
 };
 
-export const getAllAttestationsForUser = async (userAddress: string, schemaId: string) => {
+export const getAttestationsForAddress = async (userAddress: string) => {
   const signer = await getSigner();
 
   const address = externalContracts[1].EAS.address;
@@ -103,7 +101,7 @@ export const getAllAttestationsForUser = async (userAddress: string, schemaId: s
   const attested = await EASInstance.queryFilter("Attested", fromBlock);
 
   return attested.filter(event => {
-    return event.args!.recipient === userAddress && event.args!.schema === schemaId;
+    return event.args!.recipient === userAddress && event.args!.schema === schemaUID;
   });
 };
 
