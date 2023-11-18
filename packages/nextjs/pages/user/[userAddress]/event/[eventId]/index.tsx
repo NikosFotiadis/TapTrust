@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 import { baseGoerli } from "wagmi/chains";
 import deployedContracts from "~~/contracts/deployedContracts";
-import { readEvents } from "~~/services/web3/polls";
+import { readPollsForEvent } from "~~/services/web3/polls";
 
 function calculateTimeLeft(timestamp: number) {
   const now = new Date().getTime(); // Current timestamp in milliseconds
@@ -23,16 +25,21 @@ function calculateTimeLeft(timestamp: number) {
 
 const Polls = () => {
   const [polls, setPolls] = useState<any[]>([]);
+  const params = useParams();
 
   const getEvents = async () => {
-    const events = (await readEvents(deployedContracts[baseGoerli.id as 84531].Voting.address)) || [];
+    const events =
+      (await readPollsForEvent(deployedContracts[baseGoerli.id as 84531].Voting.address, params.eventId as string)) ||
+      [];
 
-    setPolls(events.map(({ args }) => args));
+    setPolls(events);
   };
 
   useEffect(() => {
-    getEvents();
-  }, []);
+    if (params?.eventId) {
+      getEvents();
+    }
+  }, [params]);
 
   const renderPolls = (poll: any, i: number) => {
     const timestamp = Number(poll.endTs * 1000);
@@ -47,9 +54,9 @@ const Polls = () => {
 
     return (
       <div key={i} className="p-4 max-w-sm rounded overflow-hidden shadow-lg bg-white">
-        <h2 className="text-gray-700 font-bold text-xl mb-2">{poll.title || "Name"}</h2>
+        <h2 className="text-gray-700 font-bold text-xl mb-2">{poll.title}</h2>
         <h3 className="text-gray-700 text-base">Poll ends in {`${days} days ${hours} hours ${minutes} minutes`}</h3>
-        <h3>{poll.pollId}</h3>
+        <Link href={`/user/${params.userAddress}/event/${params.eventId}/polls/${poll.id}/vote`}>Vote</Link>
       </div>
     );
   };

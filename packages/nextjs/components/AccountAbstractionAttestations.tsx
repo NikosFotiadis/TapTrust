@@ -5,10 +5,11 @@ import { getAttestationsForAddress } from "~~/services/web3/attestationService";
 
 interface ScanComponentProps {
   aaAddress: string;
+  eoaAddress: string;
 }
 
 const AccountAbstractionAttestations: React.FC<ScanComponentProps> = props => {
-  const { aaAddress } = props;
+  const { aaAddress, eoaAddress } = props;
 
   const {
     data = [],
@@ -39,7 +40,7 @@ const AccountAbstractionAttestations: React.FC<ScanComponentProps> = props => {
               <div className="min-w-0 flex-auto">
                 <p className="text-xs font-medium leading-6 text-gray-600">Event Name</p>
                 <p className="text-xl font-semibold leading-6 text-gray-900">
-                  <Link href={`/events/${attestation.eventId}`}>{attestation.eventName}</Link>
+                  <Link href={`/user/${eoaAddress}/event/${attestation.eventId}`}>{attestation.eventName}</Link>
                 </p>
 
                 <p className="text-xs font-medium leading-6 text-gray-600">Event Role</p>
