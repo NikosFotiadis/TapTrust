@@ -13,8 +13,8 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const externalContracts = {
   1: {
     EAS: {
-      address: "0xC2679fBD37d54388Ce493F1DB75320D236e1815e",
-      deployedAt: 4717894,
+      address: "0x4200000000000000000000000000000000000021",
+      deployedAt: 12565960,
       abi: [
         {
           inputs: [{ internalType: "contract ISchemaRegistry", name: "registry", type: "address" }],
@@ -464,7 +464,7 @@ const externalContracts = {
       ],
     },
     SchemaRegistry: {
-      address: "0x0a7E2Ff54e76B8E6659aedc9103FB21c038050D0",
+      address: "0x4200000000000000000000000000000000000020",
       abi: [
         { inputs: [], name: "AlreadyExists", type: "error" },
         {

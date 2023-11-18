@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { getSigner } from "./ethersSigner";
+import { getProvider, getSigner } from "./ethersSigner";
 import { Attestation, EAS, SchemaEncoder, SchemaRecord, SchemaRegistry } from "@ethereum-attestation-service/eas-sdk";
 import { Contract } from "ethers";
 import externalContracts from "~~/contracts/externalContracts";
@@ -91,18 +91,39 @@ export const createMultiAttestation = async (addresses: string[], attestation: s
 };
 
 export const getAttestationsForAddress = async (userAddress: string) => {
-  const signer = await getSigner();
+  const provider = await getProvider();
 
   const address = externalContracts[1].EAS.address;
   const abi = externalContracts[1].EAS.abi;
   const fromBlock = externalContracts[1].EAS.deployedAt;
-  const EASInstance = new Contract(address, abi, signer);
+  const EASInstance = new Contract(address, abi, provider);
 
   const attested = await EASInstance.queryFilter("Attested", fromBlock);
 
   return attested.filter(event => {
     return event.args!.recipient === userAddress && event.args!.schema === schemaUID;
   });
+};
+
+// Return all the attestations where you are the organizer
+export const getOrganizerAttestationsForAddress = async (userAddress: string) => {
+  const provider = await getProvider();
+
+  const address = externalContracts[1].EAS.address;
+  const abi = externalContracts[1].EAS.abi;
+  const fromBlock = externalContracts[1].EAS.deployedAt;
+  const EASInstance = new Contract(address, abi, provider);
+
+  const attested = await EASInstance.queryFilter("Attested", fromBlock);
+
+  // Events for which you self attested are the ones where you are the organizer
+  const res = attested.filter(event => {
+    return (
+      event.args!.recipient === userAddress && event.args!.schema === schemaUID && event.args!.attester === userAddress
+    );
+  });
+
+  return res;
 };
 
 const createAttestationSchema = async () => {
