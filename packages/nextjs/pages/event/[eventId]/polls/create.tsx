@@ -1,17 +1,22 @@
 import React, { useState } from "react";
+import { useParams } from "next/navigation";
 import { useAccount, useContractWrite } from "wagmi";
-import Voting_abi from "~~/services/web3/abis/Voting_abi.json";
+import { baseGoerli } from "wagmi/chains";
+import deployedContracts from "~~/contracts/deployedContracts";
+import { schemaUID } from "~~/services/web3/attestationService";
 
 const nowInSeconds = () => Math.round(Date.now() / 1000);
 
 const CreatePoll = () => {
+  const params = useParams();
+
   const [title, setTitle] = useState("");
   const [options, setOptions] = useState([""]);
   const [duration, setDuration] = useState(0);
   const { address } = useAccount();
   const { isLoading, write } = useContractWrite({
-    address: process.env.VOTING_ADDRESS,
-    abi: Voting_abi,
+    address: deployedContracts[baseGoerli.id].Voting.address,
+    abi: deployedContracts[baseGoerli.id].Voting.abi,
     functionName: "createPoll",
   });
 
@@ -20,9 +25,9 @@ const CreatePoll = () => {
   const handleSubmit = () => {
     write({
       args: [
-        // attestationSchema,
+        schemaUID,
         address, //attester
-        // eventId,
+        params.eventId,
         title,
         options,
         endTs,

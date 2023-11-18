@@ -5,20 +5,30 @@
 import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 
 const deployedContracts = {
-  31337: {
-    YourContract: {
-      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+  84531: {
+    Voting: {
+      address: "0x1D9D738a889FeCa34794011dF55cd41461b56538",
       abi: [
         {
           inputs: [
             {
-              internalType: "address",
-              name: "_owner",
+              internalType: "contract IEAS",
+              name: "eas",
               type: "address",
+            },
+            {
+              internalType: "bytes32",
+              name: "votedAttestationSchemaId",
+              type: "bytes32",
             },
           ],
           stateMutability: "nonpayable",
           type: "constructor",
+        },
+        {
+          inputs: [],
+          name: "InvalidEAS",
+          type: "error",
         },
         {
           anonymous: false,
@@ -26,125 +36,172 @@ const deployedContracts = {
             {
               indexed: true,
               internalType: "address",
-              name: "greetingSetter",
+              name: "creator",
               type: "address",
             },
             {
               indexed: false,
-              internalType: "string",
-              name: "newGreeting",
-              type: "string",
-            },
-            {
-              indexed: false,
-              internalType: "bool",
-              name: "premium",
-              type: "bool",
+              internalType: "bytes32",
+              name: "id",
+              type: "bytes32",
             },
             {
               indexed: false,
               internalType: "uint256",
-              name: "value",
+              name: "endTs",
               type: "uint256",
             },
           ],
-          name: "GreetingChange",
+          name: "CreatePoll",
           type: "event",
         },
         {
-          inputs: [],
-          name: "greeting",
-          outputs: [
-            {
-              internalType: "string",
-              name: "",
-              type: "string",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "owner",
-          outputs: [
-            {
-              internalType: "address",
-              name: "",
-              type: "address",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "premium",
-          outputs: [
-            {
-              internalType: "bool",
-              name: "",
-              type: "bool",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
           inputs: [
             {
-              internalType: "string",
-              name: "_newGreeting",
-              type: "string",
+              internalType: "bytes32",
+              name: "attestationSchema",
+              type: "bytes32",
             },
-          ],
-          name: "setGreeting",
-          outputs: [],
-          stateMutability: "payable",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "totalCounter",
-          outputs: [
+            {
+              internalType: "address",
+              name: "attester",
+              type: "address",
+            },
             {
               internalType: "uint256",
-              name: "",
+              name: "eventId",
+              type: "uint256",
+            },
+            {
+              internalType: "string",
+              name: "title",
+              type: "string",
+            },
+            {
+              internalType: "string[]",
+              name: "options",
+              type: "string[]",
+            },
+            {
+              internalType: "uint256",
+              name: "endTs",
               type: "uint256",
             },
           ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "",
-              type: "address",
-            },
-          ],
-          name: "userGreetingCounter",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "withdraw",
+          name: "createPoll",
           outputs: [],
           stateMutability: "nonpayable",
           type: "function",
         },
         {
-          stateMutability: "payable",
-          type: "receive",
+          inputs: [
+            {
+              internalType: "bytes32",
+              name: "pollId",
+              type: "bytes32",
+            },
+          ],
+          name: "getPoll",
+          outputs: [
+            {
+              components: [
+                {
+                  internalType: "string",
+                  name: "title",
+                  type: "string",
+                },
+                {
+                  components: [
+                    {
+                      internalType: "string",
+                      name: "name",
+                      type: "string",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "votes",
+                      type: "uint256",
+                    },
+                  ],
+                  internalType: "struct Voting.PollOption[]",
+                  name: "options",
+                  type: "tuple[]",
+                },
+                {
+                  internalType: "uint256",
+                  name: "endTs",
+                  type: "uint256",
+                },
+                {
+                  internalType: "bytes32",
+                  name: "attestationSchemaId",
+                  type: "bytes32",
+                },
+                {
+                  internalType: "uint256",
+                  name: "eventId",
+                  type: "uint256",
+                },
+                {
+                  internalType: "address",
+                  name: "attester",
+                  type: "address",
+                },
+              ],
+              internalType: "struct Voting.Poll",
+              name: "",
+              type: "tuple",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes32",
+              name: "pollId",
+              type: "bytes32",
+            },
+          ],
+          name: "getWinner",
+          outputs: [
+            {
+              internalType: "string",
+              name: "",
+              type: "string",
+            },
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes32",
+              name: "attestationId",
+              type: "bytes32",
+            },
+            {
+              internalType: "bytes32",
+              name: "pollId",
+              type: "bytes32",
+            },
+            {
+              internalType: "uint256",
+              name: "option",
+              type: "uint256",
+            },
+          ],
+          name: "vote",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
         },
       ],
       inheritedFunctions: {},

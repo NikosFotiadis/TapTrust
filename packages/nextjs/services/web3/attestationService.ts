@@ -7,7 +7,7 @@ import externalContracts from "~~/contracts/externalContracts";
 const EASContractAddress = "0x4200000000000000000000000000000000000021";
 const schemaRegistryContractAddress = "0x4200000000000000000000000000000000000020";
 const resolverAddress = "0x0000000000000000000000000000000000000000";
-const schemaUID = "0x95e10aa7a515d68dafbfd739b4c9ed7afb40e1fbe8f7a1468501de02fc334c28";
+export const schemaUID = "0x95e10aa7a515d68dafbfd739b4c9ed7afb40e1fbe8f7a1468501de02fc334c28";
 
 const createAttendeeSchemaData = ({ eventId, eventName }: { eventId: string; eventName: string }): any => {
   const schemaEncoder = new SchemaEncoder(attestationTypes.attendee.schema);
@@ -86,7 +86,8 @@ export const fetchAttestationSchema = async (schemaId: string): Promise<SchemaRe
 export const createMultiAttestation = async (addresses: string[], attestation: string): Promise<void> => {
   console.log(`Creating attestation for addresses ${addresses} with attestation ${attestation}`);
 
-  await _createMultiAttestation(addresses, attestation, { eventId: "1", eventName: "ev1" });
+  // await _createMultiAttestation(addresses, attestation, { eventId: "1", eventName: "ev1" });
+  await createAttestationSchema();
   return;
 };
 
@@ -133,10 +134,10 @@ const createAttestationSchema = async () => {
   // @ts-ignore
   schemaRegistry.connect(signer);
 
-  const revocable = true;
+  const revocable = false;
 
   const transaction = await schemaRegistry.register({
-    schema: "uint256 eventId, string name1, string role1",
+    schema: "bytes32 pollId",
     resolverAddress,
     revocable,
   });
