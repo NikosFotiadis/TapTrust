@@ -1,4 +1,5 @@
-import { execHaloCmdWeb } from "@arx-research/libhalo/api/web.js";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { execHaloCmdWeb } = require("@arx-research/libhalo/api/web.js") as any;
 
 export const readHaloAddress = async () => {
   const command = {
@@ -18,7 +19,6 @@ export const readHaloAddress = async () => {
       throw new Error("No address found");
     }
 
-    alert(`Address: ${address}`);
     return address;
   } catch (e) {
     // the command has failed, display error to the user
@@ -31,7 +31,7 @@ export const sign = async (message: any) => {
   const cmd = {
     name: "sign",
     message: message,
-    format: 'text',
+    format: "text",
     keyNo: 1,
   };
 

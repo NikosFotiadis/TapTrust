@@ -15,8 +15,8 @@ const CreatePoll = () => {
   const [duration, setDuration] = useState(0);
   const { address } = useAccount();
   const { isLoading, write } = useContractWrite({
-    address: deployedContracts[baseGoerli.id].Voting.address,
-    abi: deployedContracts[baseGoerli.id].Voting.abi,
+    address: deployedContracts[baseGoerli.id as 31337].Voting.address,
+    abi: deployedContracts[baseGoerli.id as 31337].Voting.abi,
     functionName: "createPoll",
   });
 
@@ -26,11 +26,11 @@ const CreatePoll = () => {
     write({
       args: [
         schemaUID,
-        address, //attester
-        params.eventId,
+        address!, //attester
+        BigInt(Number(params.eventId)),
         title,
         options,
-        endTs,
+        BigInt(endTs),
       ],
     });
   };

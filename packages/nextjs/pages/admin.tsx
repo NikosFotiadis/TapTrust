@@ -3,6 +3,7 @@ import React from "react";
 import type { NextPage } from "next";
 import { useMutation } from "wagmi";
 import { z } from "zod";
+import { Header } from "~~/components/Header";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { registerAddresses } from "~~/services/web3/registerAddresses";
 
@@ -69,6 +70,7 @@ const AdminPage: NextPage = () => {
 
   return (
     <>
+      <Header />
       <MetaHeader />
       <div className="flex items-center flex-col flex-grow pt-10">
         <div className="px-5">

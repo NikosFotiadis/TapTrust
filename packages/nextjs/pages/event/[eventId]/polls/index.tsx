@@ -3,13 +3,9 @@ import { baseGoerli } from "wagmi/chains";
 import deployedContracts from "~~/contracts/deployedContracts";
 import { readEvents } from "~~/services/web3/polls";
 
-function calculateTimeLeft(timestamp) {
+function calculateTimeLeft(timestamp: number) {
   const now = new Date().getTime(); // Current timestamp in milliseconds
   const difference = timestamp - now; // Difference between timestamps in milliseconds
-
-  if (difference <= 0) {
-    return "Time has already passed";
-  }
 
   // Convert milliseconds to days, hours, minutes, and seconds
   const days = Math.floor(difference / (1000 * 60 * 60 * 24));
@@ -26,10 +22,10 @@ function calculateTimeLeft(timestamp) {
 }
 
 const Polls = () => {
-  const [polls, setPolls] = useState([]);
+  const [polls, setPolls] = useState<any[]>([]);
 
   const getEvents = async () => {
-    const events = await readEvents(deployedContracts[baseGoerli.id].Voting.address);
+    const events = (await readEvents(deployedContracts[baseGoerli.id as 31337].Voting.address)) || [];
 
     setPolls(events.map(({ args }) => args));
   };
@@ -38,8 +34,16 @@ const Polls = () => {
     getEvents();
   }, []);
 
-  const renderPolls = (poll, i) => {
-    const { days, hours, minutes } = calculateTimeLeft(poll.endTs * 1000);
+  const renderPolls = (poll: any, i: number) => {
+    const timestamp = Number(poll.endTs * 1000);
+    const { days, hours, minutes } = calculateTimeLeft(timestamp);
+
+    const now = new Date().getTime(); // Current timestamp in milliseconds
+    const difference = timestamp - now; // Difference between timestamps in milliseconds
+
+    if (difference <= 0) {
+      return "Time has already passed";
+    }
 
     return (
       <div key={i} className="p-4 max-w-sm rounded overflow-hidden shadow-lg bg-white">

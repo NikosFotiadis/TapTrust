@@ -28,7 +28,6 @@ const ParticipantPage: NextPage = () => {
           ) : (
             <Scan
               onScanResult={address => {
-                // alert(`Address: ${address}`);
                 setHaloAddress(address);
               }}
             />
