@@ -43,7 +43,15 @@ const AccountAbstractionController: React.FC<ScanComponentProps> = props => {
   return (
     <div className="overflow-scroll">
       <h1 className="text-2xl font-bold">Account Abstraction Controller</h1>
-      <p>AA Address: {aaAddress}</p>
+      {/* Create a floating banner with a faint blue color that */}
+      <div
+        className="bg-blue-100 text-blue-700 p-4 border border-blue-700 rounded-md overflow-scroll max-w-full whitespace-pre-wrap my-4"
+        role="alert"
+      >
+        Smart Account address:
+        <br />
+        {aaAddress.slice(0, 10)}...{aaAddress.slice(-10)}
+      </div>
 
       <h2 className="text-xl font-semibold">Attestations</h2>
       <AccountAbstractionAttestations aaAddress={aaAddress} />

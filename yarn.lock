@@ -16557,7 +16557,6 @@ __metadata:
     "@headlessui/react": ^1.7.17
     "@types/elliptic": ^6
     elliptic: ^6.5.4
-    ethers: ^6.8.1
     husky: ^8.0.1
     lint-staged: ^13.0.3
     viem: ^1.19.3
