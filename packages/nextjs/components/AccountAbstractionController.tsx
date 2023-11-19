@@ -1,9 +1,9 @@
 import React from "react";
 import AccountAbstractionAttestations from "./AccountAbstractionAttestations";
-import { encodeFunctionData } from "viem";
-import { useMutation } from "wagmi";
-import externalContracts from "~~/contracts/externalContracts";
-import { sendUserOperation, waitForUserOperationTransaction } from "~~/services/web3/accountAbstraction";
+// import { encodeFunctionData } from "viem";
+// import { useMutation } from "wagmi";
+// import externalContracts from "~~/contracts/externalContracts";
+// import { sendUserOperation, waitForUserOperationTransaction } from "~~/services/web3/accountAbstraction";
 
 interface ScanComponentProps {
   aaAddress: string;
@@ -13,32 +13,32 @@ interface ScanComponentProps {
 const AccountAbstractionController: React.FC<ScanComponentProps> = props => {
   const { aaAddress, eoaAddress } = props;
 
-  const { status, mutate, data, error } = useMutation({
-    mutationFn: async () => {
-      const schema = "uint256 eventId, uint8 voteIndex, uint256 timestamp, uint256 nonce, address signer";
-      const resolverAddress = "0x0a7E2Ff54e76B8E6659aedc9103FB21c038050D0"; // Sepolia 0.26
-      const revocable = true;
+  // const { status, mutate, data, error } = useMutation({
+  //   mutationFn: async () => {
+  //     const schema = "uint256 eventId, uint8 voteIndex, uint256 timestamp, uint256 nonce, address signer";
+  //     const resolverAddress = "0x0a7E2Ff54e76B8E6659aedc9103FB21c038050D0"; // Sepolia 0.26
+  //     const revocable = true;
 
-      const uoCallData = encodeFunctionData({
-        abi: externalContracts[1].SchemaRegistry.abi,
-        functionName: "register",
-        args: [schema, resolverAddress, revocable],
-      });
+  //     const uoCallData = encodeFunctionData({
+  //       abi: externalContracts[1].SchemaRegistry.abi,
+  //       functionName: "register",
+  //       args: [schema, resolverAddress, revocable],
+  //     });
 
-      const uo = await sendUserOperation({
-        signerAddress: props.eoaAddress,
-        to: externalContracts[1].SchemaRegistry.address,
-        data: uoCallData,
-        value: BigInt(0),
-      });
+  //     const uo = await sendUserOperation({
+  //       signerAddress: props.eoaAddress,
+  //       to: externalContracts[1].SchemaRegistry.address,
+  //       data: uoCallData,
+  //       value: BigInt(0),
+  //     });
 
-      const txHash = await waitForUserOperationTransaction(eoaAddress, uo.hash);
+  //     const txHash = await waitForUserOperationTransaction(eoaAddress, uo.hash);
 
-      alert(txHash);
+  //     alert(txHash);
 
-      return { uo, txHash };
-    },
-  });
+  //     return { uo, txHash };
+  //   },
+  // });
 
   return (
     <div className="overflow-scroll">
@@ -53,10 +53,10 @@ const AccountAbstractionController: React.FC<ScanComponentProps> = props => {
         {aaAddress.slice(0, 10)}...{aaAddress.slice(-10)}
       </div>
 
-      <h2 className="text-xl font-semibold">Attestations</h2>
+      <h2 className="text-xl font-semibold">Your Events</h2>
       <AccountAbstractionAttestations aaAddress={aaAddress} eoaAddress={eoaAddress} />
 
-      <h2 className="text-xl font-semibold">Sign message</h2>
+      {/* <h2 className="text-xl font-semibold">Sign message</h2>
 
       <div className="max-w-[250px]">
         {
@@ -78,7 +78,7 @@ const AccountAbstractionController: React.FC<ScanComponentProps> = props => {
             ),
           }[status]
         }
-      </div>
+      </div> */}
     </div>
   );
 };
