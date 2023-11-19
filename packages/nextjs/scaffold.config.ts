@@ -7,6 +7,7 @@ export type ScaffoldConfig = {
   walletConnectProjectId: string;
   onlyLocalBurnerWallet: boolean;
   walletAutoConnect: boolean;
+  validAttester: string;
 };
 
 const scaffoldConfig = {
@@ -31,6 +32,8 @@ const scaffoldConfig = {
 
   // Only show the Burner Wallet when running on hardhat network
   onlyLocalBurnerWallet: true,
+
+  validAttester: process.env.VALID_ATTESTER || "0xD5c08CfBe6C6663e0A3203DA8d5CFECbF10116dB",
 
   /**
    * Auto connect:

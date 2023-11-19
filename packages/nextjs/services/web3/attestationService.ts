@@ -4,15 +4,16 @@ import { Attestation, EAS, SchemaEncoder, SchemaRecord, SchemaRegistry } from "@
 import { watchContractEvent } from "@wagmi/core";
 import { Contract } from "ethers";
 import externalContracts from "~~/contracts/externalContracts";
+import ScaffoldConfig from "~~/scaffold.config";
 
 const EASContractAddress = "0x4200000000000000000000000000000000000021";
 const schemaRegistryContractAddress = "0x4200000000000000000000000000000000000020";
-// const resolverAddress = "0x0000000000000000000000000000000000000000";
-export const schemaUID = "0x95e10aa7a515d68dafbfd739b4c9ed7afb40e1fbe8f7a1468501de02fc334c28";
+export const schemaUID = "0xf27cbff99bcd84cf8368fe95ab175243c00667f2c414648dda70fe6b5b8378ee";
+export const validAttester = ScaffoldConfig.validAttester;
 
 export const ROLES = {
-  organizer: "roleOr",
-  attendee: "roleAt",
+  organizer: "Organizer",
+  attendee: "Attendee",
 };
 
 export type AttestationData = {
@@ -28,8 +29,8 @@ const createAttendeeSchemaData = ({ eventId, eventName }: { eventId: string; eve
   const schemaEncoder = new SchemaEncoder(attestationTypes.attendee.schema);
   return schemaEncoder.encodeData([
     { name: "eventId", value: eventId, type: "uint256" },
-    { name: "name1", value: eventName, type: "string" },
-    { name: "role1", value: "roleAt", type: "string" },
+    { name: "name", value: eventName, type: "string" },
+    { name: "role", value: ROLES.attendee, type: "string" },
   ]);
 };
 
@@ -37,23 +38,26 @@ const createOrganizerSchemaData = ({ eventId, eventName }: { eventId: string; ev
   const schemaEncoder = new SchemaEncoder(attestationTypes.attendee.schema);
   return schemaEncoder.encodeData([
     { name: "eventId", value: eventId, type: "uint256" },
-    { name: "name1", value: eventName, type: "string" },
-    { name: "role1", value: "roleOr", type: "string" },
+    { name: "name", value: eventName, type: "string" },
+    { name: "role", value: ROLES.organizer, type: "string" },
   ]);
 };
 
 const attestationTypes = {
   organizer: {
-    schema: "uint256 eventId1, string name1, string role1",
+    schema: "uint256 eventId, string name, string role",
     schemaFactory: createOrganizerSchemaData,
   },
   attendee: {
-    schema: "uint256 eventId, string name1, string role1",
+    schema: "uint256 eventId, string name, string role",
     schemaFactory: createAttendeeSchemaData,
   },
 };
 
 const _createMultiAttestation = async (addresses: string[], attestationType: string, schemaData: any) => {
+  console.log("file: attestationService.ts:59 -> addresses:", addresses);
+  console.log("file: attestationService.ts:59 -> attestationType:", attestationType);
+  console.log("file: attestationService.ts:59 -> schemaData:", schemaData);
   const signer = await getSigner();
   const eas = new EAS(EASContractAddress);
   // @ts-ignore
@@ -64,7 +68,7 @@ const _createMultiAttestation = async (addresses: string[], attestationType: str
   const data = addresses.map(address => {
     return {
       recipient: address,
-      revocable: true,
+      revocable: false,
       data: attData,
     };
   });
@@ -98,11 +102,13 @@ export const fetchAttestationSchema = async (schemaId: string): Promise<SchemaRe
   return await schemaRegistry.getSchema({ uid: schemaId });
 };
 
-export const createMultiAttestation = async (addresses: string[], attestation: string): Promise<void> => {
-  console.log(`Creating attestation for addresses ${addresses} with attestation ${attestation}`);
-
-  await _createMultiAttestation(addresses, attestation, { eventId: "1", eventName: "ev1" });
-  return;
+export const createMultiAttestation = async (
+  addresses: string[],
+  attestation: string,
+  eventName: string,
+  eventId: string,
+): Promise<void> => {
+  await _createMultiAttestation(addresses, attestation, { eventId, eventName });
 };
 
 export const getAttestationsForAddress = async (userAddress: string): Promise<AttestationData[]> => {
@@ -124,13 +130,12 @@ export const getAttestationsForAddress = async (userAddress: string): Promise<At
       const attestationId = attestation.args?.uid;
       const attestationDetails = await EASInstance.getAttestation(attestationId);
 
-      console.log("file: attestationService.ts:126 -> attestationDetails:", attestationDetails);
       const schemaEncoder = new SchemaEncoder(attestationTypes.attendee.schema);
       const decoded = schemaEncoder.decodeData(attestationDetails.data);
 
       const eventId = decoded.find(({ name }) => name === "eventId")!.value.value as string;
-      const eventName = decoded.find(({ name }) => name === "name1")!.value.value as string;
-      const role = decoded.find(({ name }) => name === "role1")!.value.value as string;
+      const eventName = decoded.find(({ name }) => name === "name")!.value.value as string;
+      const role = decoded.find(({ name }) => name === "role")!.value.value as string;
 
       const attestationItem: AttestationData = {
         eventId,
@@ -173,8 +178,8 @@ export const getOrganizerAttestationsForAddress = async (userAddress: string) =>
       const decoded = schemaEncoder.decodeData(attestationDetails.data);
 
       const eventId = decoded.find(({ name }) => name === "eventId")!.value.value as string;
-      const eventName = decoded.find(({ name }) => name === "name1")!.value.value as string;
-      const role = decoded.find(({ name }) => name === "role1")!.value.value as string;
+      const eventName = decoded.find(({ name }) => name === "name")!.value.value as string;
+      const role = decoded.find(({ name }) => name === "role")!.value.value as string;
 
       const attestationItem: AttestationData = {
         eventId,
@@ -184,8 +189,6 @@ export const getOrganizerAttestationsForAddress = async (userAddress: string) =>
         recipient: attestation.args!.recipient,
         id: attestationId,
       };
-
-      console.log("file: attestationService.ts:188 -> attestationItem:", attestationItem);
 
       return attestationItem;
     }),
@@ -215,8 +218,8 @@ export const watchOrganizerEventsForAddress = async (
         const decoded = schemaEncoder.decodeData(attestationDetails.data);
 
         const eventId = decoded.find(({ name }) => name === "eventId")!.value.value as string;
-        const eventName = decoded.find(({ name }) => name === "name1")!.value.value as string;
-        const role = decoded.find(({ name }) => name === "role1")!.value.value as string;
+        const eventName = decoded.find(({ name }) => name === "name")!.value.value as string;
+        const role = decoded.find(({ name }) => name === "role")!.value.value as string;
 
         const attestationItem: AttestationData = {
           eventId,
@@ -243,8 +246,8 @@ export const watchOrganizerEventsForAddress = async (
 //   const revocable = false;
 
 //   const transaction = await schemaRegistry.register({
-//     schema: "bytes32 pollId",
-//     resolverAddress,
+//     schema: "uint256 eventId, string name, string role",
+//     resolverAddress: "0x0000000000000000000000000000000000000000",
 //     revocable,
 //   });
 
