@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
@@ -28,7 +29,7 @@ function calculateTimeLeft(timestamp: number) {
 
 const Polls = () => {
   const [polls, setPolls] = useState<any[]>([]);
-  const [event, setEvent] = useState({});
+  const [event, setEvent] = useState<any>({});
   const params = useParams();
   const searchParams = useSearchParams();
   const aaAddress = searchParams.get("aaAddress");
@@ -41,7 +42,7 @@ const Polls = () => {
     if (data.length && params?.eventId) {
       const attestation = data.find(att => String(att.eventId) === String(params.eventId));
 
-      setEvent(attestation);
+      setEvent(attestation!);
     }
   }, [data, params?.eventId]);
 
