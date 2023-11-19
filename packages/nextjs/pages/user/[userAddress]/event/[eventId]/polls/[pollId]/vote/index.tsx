@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
 import { useContractRead } from "wagmi";
 import { baseGoerli } from "wagmi/chains";
 import deployedContracts from "~~/contracts/deployedContracts";
@@ -9,6 +10,7 @@ import { getVotingUoCallData } from "~~/services/web3/voting";
 
 const Vote = () => {
   const params = useParams();
+  const router = useRouter()
   const [selectedOption, setSelectedOption] = useState<string>();
   const [attestation, setAttestation] = useState<AttestationData>();
 
@@ -30,9 +32,9 @@ const Vote = () => {
         value: BigInt(0),
       });
 
-      const txHash = await waitForUserOperationTransaction(params.userAddress as string, uo.hash);
+      await waitForUserOperationTransaction(params.userAddress as string, uo.hash);
 
-      alert(txHash);
+      router.push(`/user/${params.userAddress}/event/${params.eventId}`)
     }
   };
 
@@ -57,25 +59,25 @@ const Vote = () => {
   const renderOptions = () => {
     return data?.options.map((option, i) => (
       <div key={i} className="flex items-center mb-4">
-        <input type="radio" id={option.name} name="vote" value={i} className="mr-2" />
-        <label>{option.name}</label>
+        <input type="radio" id={option.name} name="vote" value={i} className="mr-2"/>
+        <label>{option.name} ({option.votes.toString()})</label>
       </div>
     ));
   };
 
   return data ? (
-    <div className="text-black max-w-md mx-auto mt-8 bg-white rounded-lg overflow-hidden shadow-md">
-      <div className="px-6 py-4">
-        <div className="font-bold text-xl mb-2">{data?.title}</div>
-        <div onChange={handleChange}>{renderOptions()}</div>
-        <button
-          disabled={!selectedOption}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          onClick={handleVote}
-        >
-          Submit Vote
-        </button>
+    <div>
+      <div className="w-full text-black max-w-md mx-auto mt-8 bg-white rounded-lg overflow-hidden shadow-md">
+        <div className="px-6 py-4">
+          <div className="font-bold text-xl mb-2">{data?.title}</div>
+          <div onChange={handleChange}>{renderOptions()}</div>
+          <button disabled={!selectedOption} className="btn bg-blue-500 text-white w-full" onClick={handleVote}>
+            Submit Vote
+          </button>
+        </div>
       </div>
+      <Link className='btn bg-gray-500 text-white w-full mt-10' href={`/user/${params.userAddress}/event/${params.eventId}`}>Go Back</Link>
+
     </div>
   ) : (
     <div className="flex items-center justify-center h-screen">

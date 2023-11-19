@@ -30,26 +30,22 @@ const AccountAbstractionAttestations: React.FC<ScanComponentProps> = props => {
 
   return (
     <div>
-      <ul
-        role="list"
-        className="divide-y divide-gray-100 overflow-hidden bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl"
-      >
-        {data.map(attestation => (
-          <li key={attestation.id} className="relative flex justify-between gap-x-6 px-4 py-5 hover:bg-gray-50 sm:px-6">
-            <div className="flex min-w-0 gap-x-4 gap-y-4">
-              <div className="min-w-0 flex-auto">
-                <p className="text-xs font-medium leading-6 text-gray-600">Event Name</p>
-                <p className="text-xl font-semibold leading-6 text-gray-900">
-                  <Link href={`/user/${eoaAddress}/event/${attestation.eventId}`}>{attestation.eventName}</Link>
-                </p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        {data.map((attestation, index) => (
+          <Link key={index} href={`/user/${eoaAddress}/event/${attestation.eventId}?aaAddress=${aaAddress}`}>
+            <div key={index} className="bg-white rounded-lg overflow-hidden shadow-md">
+              <div className="p-4">
+                <p className="text-xl font-semibold leading-6 text-gray-900">{attestation.eventName}</p>
+                <p className="text-xs m-0 text-gray-600">Event Role</p>
+                <p className="text-md m-0 font-semibold leading-6 text-gray-900">{attestation.role}</p>
 
-                <p className="text-xs font-medium leading-6 text-gray-600">Event Role</p>
-                <p className="text-xl font-semibold leading-6 text-gray-900">{attestation.role}</p>
+                <p className="text-xs m-0 mt-4 text-gray-600">Event Creator</p>
+                <p className="text-xs m-0 font-semibold leading-6 text-gray-900">{attestation.attester}</p>
               </div>
             </div>
-          </li>
+          </Link>
         ))}
-      </ul>
+      </div>
     </div>
   );
 };
