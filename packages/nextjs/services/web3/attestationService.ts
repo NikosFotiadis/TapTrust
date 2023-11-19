@@ -169,7 +169,7 @@ export const getOrganizerAttestationsForAddress = async (userAddress: string) =>
     );
   });
 
-  return await Promise.all(
+  const withDetails = await Promise.all(
     filtered.map(async attestation => {
       const attestationId = attestation.args!.uid;
       const attestationDetails = await EASInstance.getAttestation(attestationId);
@@ -193,6 +193,8 @@ export const getOrganizerAttestationsForAddress = async (userAddress: string) =>
       return attestationItem;
     }),
   );
+
+  return withDetails.filter(({ role }) => role === ROLES.organizer);
 };
 
 export const watchOrganizerEventsForAddress = async (
