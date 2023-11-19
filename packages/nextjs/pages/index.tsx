@@ -51,19 +51,17 @@ const team = [
     name: "Valerio Leo",
     role: "Co-Founder",
     imageUrl:
-      "https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=1024&h=1024&q=80",
+      "https://media.licdn.com/dms/image/C4E03AQF2eWQ_ftEGZQ/profile-displayphoto-shrink_800_800/0/1622986437842?e=1706140800&v=beta&t=vxIGyXlFzXTLX_c4Qi8tmNcjOEAmV18FAL0uDsJfP2g",
   },
   {
     name: "Michalis G",
     role: "Co-Founder",
-    imageUrl:
-      "https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=1024&h=1024&q=80",
+    imageUrl: "https://i0.wp.com/weatherxm.com/wp-content/uploads/2023/11/22.png?w=750&ssl=1",
   },
   {
     name: "Nikos Fotiatis",
     role: "Co-Founder",
-    imageUrl:
-      "https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=1024&h=1024&q=80",
+    imageUrl: "https://avatars.githubusercontent.com/u/33863712?v=4",
   },
 ];
 
@@ -77,12 +75,7 @@ const Home: NextPage = () => {
           <nav className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
             <div className="flex lg:flex-1">
               <a href="#" className="-m-1.5 p-1.5">
-                <span className="sr-only">TapTrust</span>
-                <img
-                  className="h-8 w-auto"
-                  src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-                  alt=""
-                />
+                <span className="font-bold leading-tigh">TapTrust</span>
               </a>
             </div>
             <div className="hidden lg:flex lg:flex-1 lg:justify-end">
