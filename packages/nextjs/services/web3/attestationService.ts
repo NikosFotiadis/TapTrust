@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { getProvider, getSigner } from "./ethersSigner";
 import { Attestation, EAS, SchemaEncoder, SchemaRecord, SchemaRegistry } from "@ethereum-attestation-service/eas-sdk";
+import { watchContractEvent } from "@wagmi/core";
 import { Contract } from "ethers";
 import externalContracts from "~~/contracts/externalContracts";
 
@@ -188,6 +189,47 @@ export const getOrganizerAttestationsForAddress = async (userAddress: string) =>
 
       return attestationItem;
     }),
+  );
+};
+
+export const watchOrganizerEventsForAddress = async (
+  userAddress: string,
+  callback: (attestationItem: AttestationData) => void,
+) => {
+  const address = externalContracts[1].EAS.address;
+  const abi = externalContracts[1].EAS.abi;
+
+  watchContractEvent(
+    {
+      address,
+      abi,
+      eventName: "Attested",
+    },
+    async event => {
+      if (event[0].args.attester === event[0].args.attester && event[0].args.attester === userAddress) {
+        const provider = await getProvider();
+        const EASInstance = new Contract(address, abi, provider);
+        const attestationDetails = await EASInstance.getAttestation(event[0].args.uid);
+
+        const schemaEncoder = new SchemaEncoder(attestationTypes.attendee.schema);
+        const decoded = schemaEncoder.decodeData(attestationDetails.data);
+
+        const eventId = decoded.find(({ name }) => name === "eventId")!.value.value as string;
+        const eventName = decoded.find(({ name }) => name === "name1")!.value.value as string;
+        const role = decoded.find(({ name }) => name === "role1")!.value.value as string;
+
+        const attestationItem: AttestationData = {
+          eventId,
+          eventName,
+          role,
+          attester: event[0].args.attester,
+          recipient: event[0].args.recipient!,
+          id: event[0].args.uid!,
+        };
+
+        callback(attestationItem);
+      }
+    },
   );
 };
 
