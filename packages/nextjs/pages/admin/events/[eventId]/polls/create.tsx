@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useParams } from "next/navigation";
 import { useAccount, useContractWrite } from "wagmi";
 import { baseGoerli } from "wagmi/chains";
+import { Header } from "~~/components/Header";
 import deployedContracts from "~~/contracts/deployedContracts";
 import { schemaUID } from "~~/services/web3/attestationService";
 
@@ -22,7 +23,13 @@ const CreatePoll = () => {
 
   const endTs = nowInSeconds() + duration * 60;
 
-  if (!address) return <div>Not logged in</div>;
+  if (!address)
+    return (
+      <>
+        <Header />
+        <div>Not logged in</div>
+      </>
+    );
 
   const handleSubmit = () => {
     write({
@@ -93,37 +100,40 @@ const CreatePoll = () => {
   };
 
   return (
-    <div className="flex justify-center">
-      <div className="form-control w-full max-w-xs">
-        <label className="label">
-          <span className="label-text">Title</span>
-        </label>
-        <input
-          type="text"
-          className="input input-bordered w-full max-w-xs"
-          value={title}
-          onChange={handleChangeTitle}
-        />
-        <label className="label">
-          <span className="label-text">Options</span>
-        </label>
-        {renderOptionsForm()}
-        <label className="label">
-          <span className="label-text">Duration (minutes)</span>
-        </label>
-        <input
-          type="text"
-          className="input input-bordered w-full max-w-xs"
-          value={duration}
-          onChange={handleChangeDuration}
-        />
-        <div className="w-full flex mt-4 mb-4">
-          <button className="btn w-full max-w-xs bg-blue-400" onClick={handleSubmit}>
-            {isLoading ? "Loading..." : "Create Poll"}
-          </button>
+    <>
+      <Header />
+      <div className="flex justify-center">
+        <div className="form-control w-full max-w-xs">
+          <label className="label">
+            <span className="label-text">Title</span>
+          </label>
+          <input
+            type="text"
+            className="input input-bordered w-full max-w-xs"
+            value={title}
+            onChange={handleChangeTitle}
+          />
+          <label className="label">
+            <span className="label-text">Options</span>
+          </label>
+          {renderOptionsForm()}
+          <label className="label">
+            <span className="label-text">Duration (minutes)</span>
+          </label>
+          <input
+            type="text"
+            className="input input-bordered w-full max-w-xs"
+            value={duration}
+            onChange={handleChangeDuration}
+          />
+          <div className="w-full flex mt-4 mb-4">
+            <button className="btn w-full max-w-xs bg-blue-400" onClick={handleSubmit}>
+              {isLoading ? "Loading..." : "Create Poll"}
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
